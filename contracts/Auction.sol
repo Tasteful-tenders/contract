@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract Aucion {
+contract Auction {
     
     IERC721 public immutable nftFactory;
     IERC20 public immutable tendersToken;
