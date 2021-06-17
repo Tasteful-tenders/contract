@@ -37,13 +37,7 @@ contract Auction {
     }
     
     /**
-     * 
-     * addNFT
-     * 
-     * 
-     * 
      * Ajouter en front un approve avant le transfer
-     * 
      */
     function addNFT(uint256 _nftId, uint256 _startprice, uint256 _enddate) external {
         require(_enddate < block.timestamp + 1 weeks);
@@ -64,13 +58,7 @@ contract Auction {
     }
     
     /**
-     * 
-     * refund
-     * 
      * Refund your money if you're not the higher bidder
-     * 
-     * 
-     * 
      */
     function refund(uint256 _nftId) external {
         Tender memory tender = tenders[_nftId];
@@ -81,18 +69,15 @@ contract Auction {
     }
     
     /**
-     * 
-     * claim
-     * 
      * Claim your NFT
-     * 
-     * 
-     * 
      */
-    function claim() external {
-        //high bidder et + price mini transfer
+    function claim(uint256 _nftId) external {
+        Tender memory tender = tenders[_nftId];
+        require(tender.highestBidder == msg.sender, 'Auction: You are not the winner of this auction');
+        require(tender.highestBid >= tender.startPrice, "Auction: Price can't be lower than the starting price");
+
+        nftFactory.transferFrom(address(this), msg.sender, _nftId);
     }
-    
     
     /**
      * Cancel auction and send back nft if no bid
