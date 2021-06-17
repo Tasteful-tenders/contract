@@ -1,5 +1,4 @@
-import {expect} from "chai";
-const hre = require("hardhat");
+import { hre, expect } from "./constant";
 
 describe("NftFactory", function() {
   it("Should return the new minted NFT", async function() {
