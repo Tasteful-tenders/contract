@@ -39,33 +39,34 @@ contract Auction {
     /**
      * Ajouter en front un approve avant le transfer
      */
-    function addNFT(uint256 _nftId, uint256 _startprice, uint256 _enddate) external {
-        require(_enddate < block.timestamp + 1 weeks);
+    function addNFT(uint256 _nftId, uint256 _startPrice, uint256 _endDate) external {
+        require(_endDate < block.timestamp + 1 weeks, 'Auction: the _end date must be in more than 1 week');
         
         nftFactory.transferFrom(msg.sender, address(this), _nftId);
-        require(nftFactory.ownerOf(_nftId) == address(this));
+        require(nftFactory.ownerOf(_nftId) == address(this), 'Auction: the new NFT owner must be the auction contract');
         
         nftIds.push(_nftId);
         tenders[_nftId] = Tender({ 
             owner: msg.sender,
-            startPrice: _startprice,
-            endDate: _enddate, 
+            startPrice: _startPrice,
+            endDate: _endDate,
             highestBidder: address(0),
             highestBid: 0
         });
         
-        emit logAddNFT(_nftId, _startprice, _enddate);
+        emit logAddNFT(_nftId, _startPrice, _endDate);
     }
     
     /**
-     * Refund your money if you're not the higher bidder
+     * Refund your money if you're not the highest bidder
      */
     function refund(uint256 _nftId) external {
         Tender memory tender = tenders[_nftId];
-        require(tender.highestBidder != address(0));
-        require(tender.highestBidder != msg.sender);
+        require(tender.highestBidder != address(0), 'Auction: Address 0 can not bid');
+        require(tender.highestBidder != msg.sender, 'Auction: Highest bidder can not cancel his bid');
         
         tendersToken.transfer(msg.sender, bidders[_nftId][msg.sender]);
+        bidders[_nftId][msg.sender] = 0;
     }
     
     /**
@@ -86,7 +87,7 @@ contract Auction {
         require(tenders[_nftId].highestBidder == address(0), 'Auction: Can not cancel auction if someone already bidded');
         require(tenders[_nftId].owner == address(msg.sender), 'Auction: Only the owner can cancel the auction');
         nftFactory.transferFrom(address(this), msg.sender, _nftId);
-        require(nftFactory.ownerOf(_nftId) == address(msg.sender), 'Auction: new owner should be msg.sender, transfer probably failed');
+        require(nftFactory.ownerOf(_nftId) == address(msg.sender), 'Auction: New owner should be msg.sender, transfer probably failed');
         
     }
     
@@ -96,6 +97,7 @@ contract Auction {
      */
     function bid(uint256 _nftId, uint256 _bid) external {
         Tender memory tender = tenders[_nftId];
+        require(bidders[_nftId][msg.sender] == 0, 'Auction: Refund before biding again');
         require(tender.startPrice < _bid, 'Auction: Bid should be higher then the start price');
         require(tender.highestBid < _bid, 'Auction: Bid should be higher than the last one');
         
@@ -105,6 +107,7 @@ contract Auction {
         
         tenders[_nftId].highestBidder = msg.sender;
         tenders[_nftId].highestBid = _bid;
+        bidders[_nftId][msg.sender] = _bid;
         
         emit logBid(_nftId, _bid);
     }
