@@ -80,7 +80,15 @@ describe("Tasteful-tenders", function () {
         });
 
         it("Should claim the nft after winning the auction", async function () {
+            const nftId: number = 1;
 
+            //increase the block.timestamp by one week
+            await hre.waffle.provider.send('evm_increaseTime', [604800]);
+            await hre.waffle.provider.send('evm_mine');
+
+            await auction.connect(addr1).claim(nftId);
+
+            expect(await nftFactory.ownerOf(nftId)).to.equal(addr1.address);
         });
 
         it("Should cancel the auction", async function () {

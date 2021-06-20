@@ -76,6 +76,7 @@ contract Auction {
         Tender memory tender = tenders[_nftId];
         require(tender.highestBidder == msg.sender, 'Auction: You are not the winner of this auction');
         require(tender.highestBid >= tender.startPrice, "Auction: Price can't be lower than the starting price");
+        require(tender.endDate <= block.timestamp, "Auction: Can not claim before the auction has ended");
 
         nftFactory.transferFrom(address(this), msg.sender, _nftId);
     }
