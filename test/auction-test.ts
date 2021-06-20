@@ -27,10 +27,9 @@ describe("Tasteful-tenders", function () {
                 "title": "My new art",
                 "ipfsHash": "this is an ipfs hash"
             });
-            const newNftOwnerAddress: string = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
 
-            await nftFactory.mintNft(newNftOwnerAddress, nftData);
-            expect(await nftFactory.ownerOf(1)).to.equal(newNftOwnerAddress);
+            await nftFactory.mintNft(owner.address, nftData);
+            expect(await nftFactory.ownerOf(1)).to.equal(owner.address);
             expect(await nftFactory.tokenURI(1)).to.equal(nftData);
         });
     });
@@ -92,7 +91,25 @@ describe("Tasteful-tenders", function () {
         });
 
         it("Should cancel the auction", async function () {
+            const nftData = JSON.stringify({
+                "title": "My new art",
+                "ipfsHash": "this is an ipfs hash"
+            });
 
+            await nftFactory.mintNft(owner.address, nftData);
+
+            const nftId: number = 2;
+            const startPrice: number = 150;
+            //(now + 1 week in ms) then converted to solidity timestamp with / 1000
+            const endDate: number = Math.round((new Date().getTime() + (604800 * 1000)) / 1000);
+
+            await nftFactory.approve(auction.address, nftId);
+
+            await auction.addNFT(nftId, startPrice, endDate);
+
+            await auction.cancel(nftId);
+
+            expect(await nftFactory.ownerOf(nftId)).to.equal(owner.address);
         });
     });
 
