@@ -1,5 +1,5 @@
 import {hre, expect} from "./constant";
-import {formatEther} from "ethers/lib/utils";
+import {BigNumber} from "ethers";
 
 describe("Tasteful-tenders", function () {
     let nftFactory, auction, tendersToken;
@@ -76,7 +76,7 @@ describe("Tasteful-tenders", function () {
             await auction.connect(addr1).bid(nftId, newBidPrice);
             await auction.refund(nftId);
 
-            expect(await tendersToken.balanceOf(owner.address)).to.equal(await tendersToken.totalSupply());
+            expect(BigNumber.from(await tendersToken.balanceOf(owner.address))).to.equal(BigNumber.from(await tendersToken.totalSupply()).sub(BigNumber.from(newBidPrice)));
         });
 
         it("Should claim the nft after winning the auction", async function () {
