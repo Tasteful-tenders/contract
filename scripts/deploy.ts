@@ -29,7 +29,7 @@ async function main() {
     console.log("NFT factory deployed to:", nftFactory.address);
     console.log("NFT factory deployed to:", tendersToken.address);
     console.log("NFT factory deployed to:", auction.address);
-    console.log("Owner of the contracts:", (await hre.ethers.getSigners())[0]);
+    console.log("Owner of the contracts:", (await hre.ethers.getSigners())[0].address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
