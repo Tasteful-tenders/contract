@@ -19,6 +19,7 @@ contract Auction {
         uint256 endDate;
         address highestBidder;
         uint256 highestBid;
+        bool active;
     }
     
     // nftId to Bidder amount
@@ -51,7 +52,8 @@ contract Auction {
             startPrice: _startPrice,
             endDate: _endDate,
             highestBidder: address(0),
-            highestBid: 0
+            highestBid: 0,
+            active: true
         });
         
         emit logAddNFT(_nftId, _startPrice, _endDate);
@@ -79,6 +81,7 @@ contract Auction {
         require(tender.endDate <= block.timestamp, "Auction: Can not claim before the auction has ended");
 
         nftFactory.transferFrom(address(this), msg.sender, _nftId);
+        tenders[_nftId].active = false;
     }
     
     /**
@@ -88,8 +91,7 @@ contract Auction {
         require(tenders[_nftId].highestBidder == address(0), 'Auction: Can not cancel auction if someone already bidded');
         require(tenders[_nftId].owner == address(msg.sender), 'Auction: Only the owner can cancel the auction');
         nftFactory.transferFrom(address(this), msg.sender, _nftId);
-        require(nftFactory.ownerOf(_nftId) == address(msg.sender), 'Auction: New owner should be msg.sender, transfer probably failed');
-        
+        tenders[_nftId].active = false;
     }
     
     
@@ -98,6 +100,7 @@ contract Auction {
      */
     function bid(uint256 _nftId, uint256 _bid) external {
         Tender memory tender = tenders[_nftId];
+        require(tender.active == true, 'Auction: Tender must be active to bid on it');
         require(bidders[_nftId][msg.sender] == 0, 'Auction: Refund before biding again');
         require(tender.startPrice < _bid, 'Auction: Bid should be higher then the start price');
         require(tender.highestBid < _bid, 'Auction: Bid should be higher than the last one');
