@@ -14,7 +14,6 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 module.exports = {
-  defaultNetwork: "rinkeby",
   networks: {
     hardhat: {
     },
