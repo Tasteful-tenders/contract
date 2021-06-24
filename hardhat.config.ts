@@ -1,6 +1,7 @@
 import {task} from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "hardhat-gas-reporter";
+import "@nomiclabs/hardhat-etherscan";
 require('dotenv').config()
 
 task("accounts", "Prints the list of accounts", async (args, hre) => {
@@ -23,5 +24,10 @@ module.exports = {
     }
   },
   solidity: "0.8.0",
+  etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://etherscan.io/
+    apiKey: "F7CPB7Q6WZPFIXBT6PM89HJVZH5MEEWTB1"
+  }
 };
 
