@@ -38,11 +38,12 @@ contract Auction {
     }
     
     /**
-     * Ajouter en front un approve avant le transfer
+     * Create an auction
      */
     function addNFT(uint256 _nftId, uint256 _startPrice, uint256 _endDate) external {
-        require(_endDate < block.timestamp + 1 weeks, 'Auction: the _end date must be in more than 1 week');
-        
+        require(_endDate < block.timestamp + 1 weeks, 'Auction: the _end date must be in less than 1 week');
+        require(_endDate > block.timestamp + 1 days, 'Auction: the _end date must be in more than 1 day');
+
         nftFactory.transferFrom(msg.sender, address(this), _nftId);
         require(nftFactory.ownerOf(_nftId) == address(this), 'Auction: the new NFT owner must be the auction contract');
         

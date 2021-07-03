@@ -38,8 +38,8 @@ describe("Tasteful-tenders", function () {
         it("Should list an NFT", async function () {
             const nftId: number = 1;
             const startPrice: number = 150;
-            //(now + 1 week in ms) then converted to solidity timestamp with / 1000
-            const endDate: number = Math.round((new Date().getTime() + (604800 * 1000)) / 1000);
+            //(now + ~~1 week in ms) then converted to solidity timestamp with / 1000
+            const endDate: number = Math.round((new Date().getTime() + (604000 * 1000)) / 1000);
 
             await nftFactory.approve(auction.address, nftId);
 
@@ -100,8 +100,8 @@ describe("Tasteful-tenders", function () {
 
             const nftId: number = 2;
             const startPrice: number = 150;
-            //(now + 1 week in ms) then converted to solidity timestamp with / 1000
-            const endDate: number = Math.round((new Date().getTime() + (604800 * 1000)) / 1000);
+            //(now + ~~2 week in ms) then converted to solidity timestamp with / 1000
+            const endDate: number = Math.round((new Date().getTime() + (604000 * 1000)*2) / 1000);
 
             await nftFactory.approve(auction.address, nftId);
 
