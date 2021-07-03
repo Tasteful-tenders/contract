@@ -1,4 +1,4 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional 
+// We require the Hardhat Runtime Environment explicitly here. This is optional
 // but useful for running the script in a standalone fashion through `node <script>`.
 //
 // When running the script with `hardhat run <script>` you'll find the Hardhat
@@ -13,21 +13,14 @@ async function main() {
     // manually to make sure everything is compiled
     // await hre.run('compile');
 
+    const nftFactory: string = '0x709685A2c2AA3ea02b791Fc58bc02DE422e5d438';
+    const tendersToken: string = '0x281bfbf5c670ad11Ace3eF5c4BE81D5ddFF0737d';
+
     // We get the contract to deploy
-    const NftFactory = await hre.ethers.getContractFactory("NftFactory");
-    const nftFactory = await NftFactory.deploy();
-    await nftFactory.deployed();
-
-    const TendersToken = await hre.ethers.getContractFactory("TendersToken");
-    const tendersToken = await TendersToken.deploy();
-    await tendersToken.deployed();
-
     const Auction = await hre.ethers.getContractFactory("Auction");
-    const auction = await Auction.deploy(nftFactory.address, tendersToken.address);
+    const auction = await Auction.deploy(nftFactory, tendersToken);
     await auction.deployed();
 
-    console.log("NFT factory deployed to:", nftFactory.address);
-    console.log("NFT factory deployed to:", tendersToken.address);
     console.log("NFT factory deployed to:", auction.address);
     console.log("Owner of the contracts:", (await hre.ethers.getSigners())[0].address);
 }
