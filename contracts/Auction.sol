@@ -102,12 +102,16 @@ contract Auction {
     function bid(uint256 _nftId, uint256 _bid) external {
         Tender memory tender = tenders[_nftId];
         require(tender.active == true, 'Auction: Tender must be active to bid on it');
-        require(bidders[_nftId][msg.sender] == 0, 'Auction: Refund before biding again');
         require(tender.startPrice < _bid, 'Auction: Bid should be higher then the start price');
         require(tender.highestBid < _bid, 'Auction: Bid should be higher than the last one');
+
+        uint256 amountToSend = _bid;
+        if (bidders[_nftId][msg.sender] != 0) {
+            amountToSend.sub(bidders[_nftId][msg.sender]);
+        }
         
-        uint256 nextContractBalance = tendersToken.balanceOf(address(this)).add(_bid);
-        tendersToken.transferFrom(msg.sender, address(this), _bid);
+        uint256 nextContractBalance = tendersToken.balanceOf(address(this)).add(amountToSend);
+        tendersToken.transferFrom(msg.sender, address(this), amountToSend);
         require(nextContractBalance == tendersToken.balanceOf(address(this)), 'Auction: Balance not updated correctly, transfer probably failed');
         
         tenders[_nftId].highestBidder = msg.sender;
