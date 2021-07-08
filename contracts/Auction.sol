@@ -30,7 +30,7 @@ contract Auction {
     uint256[] public nftIds;
     
     event logAddNFT(uint256 indexed _nftId, uint256 indexed _startprice, uint256 indexed _enddate);
-    event logBid(uint256 indexed _nftId, uint256 indexed _bid);
+    event logBid(uint256 indexed _nftId, address indexed _bidder, uint256 indexed _bid, uint256 _timestamp);
     
     constructor(IERC721 _NftFactory, IERC20 _tendersToken) {
         nftFactory = _NftFactory;
@@ -114,7 +114,7 @@ contract Auction {
         tenders[_nftId].highestBid = _bid;
         bidders[_nftId][msg.sender] = _bid;
         
-        emit logBid(_nftId, _bid);
+        emit logBid(_nftId, msg.sender, _bid, block.timestamp);
     }
     
 }
