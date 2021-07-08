@@ -21,7 +21,7 @@ async function main() {
     const auction = await Auction.deploy(nftFactory, tendersToken);
     await auction.deployed();
 
-    console.log("NFT factory deployed to:", auction.address);
+    console.log("Auction deployed to:", auction.address);
     console.log("Owner of the contracts:", (await hre.ethers.getSigners())[0].address);
 }
 
