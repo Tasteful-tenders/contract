@@ -77,11 +77,11 @@ contract Auction {
      */
     function claim(uint256 _nftId) external {
         Tender memory tender = tenders[_nftId];
-        require(tender.highestBidder == msg.sender, 'Auction: You are not the winner of this auction');
         require(tender.highestBid >= tender.startPrice, "Auction: Price can't be lower than the starting price");
         require(tender.endDate <= block.timestamp, "Auction: Can not claim before the auction has ended");
 
         nftFactory.transferFrom(address(this), msg.sender, _nftId);
+        tendersToken.transfer(tender.owner, tender.highestBid);
         tenders[_nftId].active = false;
     }
     
@@ -89,9 +89,10 @@ contract Auction {
      * Cancel auction and send back nft if no bid
      */
     function cancel(uint256 _nftId) external {
-        require(tenders[_nftId].highestBidder == address(0), 'Auction: Can not cancel auction if someone already bidded');
-        require(tenders[_nftId].owner == address(msg.sender), 'Auction: Only the owner can cancel the auction');
-        nftFactory.transferFrom(address(this), msg.sender, _nftId);
+        Tender memory tender = tenders[_nftId];
+        require(tender.highestBidder == address(0), 'Auction: Can not cancel auction if someone already bidded');
+        require(tender.owner == address(msg.sender), 'Auction: Only the owner can cancel the auction');
+        nftFactory.transferFrom(address(this), tender.owner, _nftId);
         tenders[_nftId].active = false;
     }
     
@@ -108,6 +109,12 @@ contract Auction {
         uint256 amountToSend = _bid;
         if (bidders[_nftId][msg.sender] != 0) {
             amountToSend.sub(bidders[_nftId][msg.sender]);
+        }
+
+        //refund previous bidder if not the same
+        if (tender.highestBidder != msg.sender && tender.highestBidder != address(0)) {
+            tendersToken.transfer(tender.highestBidder, tender.highestBid);
+            bidders[_nftId][tender.highestBidder] = 0;
         }
         
         uint256 nextContractBalance = tendersToken.balanceOf(address(this)).add(amountToSend);
